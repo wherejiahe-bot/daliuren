@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.js"></script>
+  <style>
+    #docx-preview-container { 
+      border: 1px solid #eee; 
+      padding: 20px;
+      margin: 20px auto;
+    }
+    .docx-wrapper { background: white; }
+  </style>
+</head>
+<body>
+  <div id="docx-preview-container"></div>
+ 
+  <script>
+  const searchParams = new URLSearchParams(window.location.search);
+
+    const DOCX_URL = decodeURIComponent(searchParams.get("url"))
+    
+    fetch(DOCX_URL)
+      .then(res => {
+        if (!res.ok)  throw new Error('文件获取失败');
+        return res.blob(); 
+      })
+      .then(blob => {
+        if (blob.type  !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document")  {
+          throw new Error('无效的 DOCX 文件');
+        }
+        docx.renderAsync(blob,  document.getElementById('docx-preview-container')); 
+      })
+      .catch(err => {
+        console.error(err); 
+        document.getElementById('docx-preview-container').innerHTML  = 
+          `<div class="error">预览失败: ${err.message}</div>`; 
+      });
+  </script>
+</body>
+</html>
